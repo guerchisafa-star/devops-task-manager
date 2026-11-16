@@ -40,7 +40,7 @@ pipeline {
         stage('Docker Build') {
             steps {
                 dir('task-manager') {
-                    bat 'docker build -t task-manager:1.0 .'
+                    bat '"C:\\Users\\safag\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" build -t task-manager:1.0 .'
                 }
             }
         }
