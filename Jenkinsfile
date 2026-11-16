@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -7,6 +8,8 @@ pipeline {
     }
 
     stages {
+
+        // Etape 1 : Recuperer le code depuis GitHub
         stage('Checkout') {
             steps {
                 git branch: 'main',
@@ -14,6 +17,7 @@ pipeline {
             }
         }
 
+        // Etape 2 : Compiler le projet et executer les tests
         stage('Build et Tests') {
             steps {
                 dir('task-manager') {
@@ -22,11 +26,21 @@ pipeline {
             }
         }
 
+        // Etape 3 : Archiver le fichier JAR genere
         stage('Archive JAR') {
             steps {
                 dir('task-manager') {
                     archiveArtifacts artifacts: 'target/*.jar',
                                      fingerprint: true
+                }
+            }
+        }
+
+        // Etape 4 : Construire l'image Docker
+        stage('Docker Build') {
+            steps {
+                dir('task-manager') {
+                    bat 'docker build -t task-manager:1.0 .'
                 }
             }
         }
