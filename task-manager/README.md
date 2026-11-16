@@ -2,8 +2,6 @@
 
 Application de gestion des tâches développée avec Spring Boot 3, Spring Data JPA et PostgreSQL.
 
----
-
 ## Prérequis
 
 | Outil | Version |
@@ -12,49 +10,46 @@ Application de gestion des tâches développée avec Spring Boot 3, Spring Data 
 | Maven | 3.8+ |
 | PostgreSQL | 14+ |
 
----
-
 ## Configuration de la base de données
 
-Créer la base dans PostgreSQL :
+Créer la base de données dans PostgreSQL :
 
 ```sql
 CREATE DATABASE taskmanager;
 ```
 
-Les identifiants par défaut dans `application.properties` :
+Configurer les variables d'environnement dans PowerShell :
 
+```powershell
+$env:DB_USERNAME="postgres"
+$env:DB_PASSWORD="votre_mot_de_passe"
 ```
-spring.datasource.url=jdbc:postgresql://localhost:5432/taskmanager
-spring.datasource.username=postgres
-spring.datasource.password=postgres
-```
 
-Modifiez ces valeurs selon votre environnement.
-
----
+La configuration PostgreSQL est définie dans `application.properties`. Le mot de passe est récupéré depuis la variable `DB_PASSWORD`.
 
 ## Lancer l'application
+
+Ouvrir un terminal dans le dossier `task-manager` (celui qui contient `pom.xml`), puis exécuter :
 
 ```bash
 mvn spring-boot:run
 ```
 
-L'API est accessible sur `http://localhost:8080`.
+L'API est accessible à l'adresse :
 
----
+http://localhost:8081
 
 ## Lancer les tests
+
+Depuis le dossier `task-manager` :
 
 ```bash
 mvn test
 ```
 
-Les tests utilisent H2 en mémoire — aucune connexion PostgreSQL n'est nécessaire.
+Les tests utilisent H2 en mémoire. Aucune connexion PostgreSQL n'est nécessaire.
 
----
-
-## Endpoints
+## Endpoints REST
 
 | Méthode | URL | Description |
 |---|---|---|
@@ -63,8 +58,6 @@ Les tests utilisent H2 en mémoire — aucune connexion PostgreSQL n'est nécess
 | GET | `/api/tasks/{id}` | Récupérer une tâche par ID |
 | PUT | `/api/tasks/{id}` | Modifier une tâche |
 | DELETE | `/api/tasks/{id}` | Supprimer une tâche |
-
----
 
 ## Exemple de payload (POST / PUT)
 
@@ -79,14 +72,13 @@ Les tests utilisent H2 en mémoire — aucune connexion PostgreSQL n'est nécess
 ```
 
 Valeurs acceptées :
+
 - **priority** : `LOW`, `MEDIUM`, `HIGH`
 - **status** : `TODO`, `IN_PROGRESS`, `DONE`
 
----
-
 ## Structure du projet
 
-```
+```text
 src/main/java/com/taskmanager/taskmanager/
 ├── TaskManagerApplication.java
 ├── controller/
@@ -108,8 +100,6 @@ src/main/java/com/taskmanager/taskmanager/
     └── GlobalExceptionHandler.java
 ```
 
----
-
 ## Tests Postman
 
-Importer le fichier `postman/TaskManager.postman_collection.json` dans Postman.
+Importer le fichier `postman/TaskManager.postman_collection.json` dans Postman pour tester les endpoints REST.
