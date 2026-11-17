@@ -53,15 +53,14 @@ pipeline {
         stage('Docker Push') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-credentials',
+                    credentialsId: 'dockerhub-jenkins-new',
                     usernameVariable: 'DOCKERHUB_USER',
                     passwordVariable: 'DOCKERHUB_TOKEN'
                 )]) {
                     bat '''
                         @echo off
-                        echo %DOCKERHUB_TOKEN% | "C:\\Users\\safag\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" login -u "%DOCKERHUB_USER%" --password-stdin
 
-                        "C:\\Users\\safag\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" push safagr/task-manager:1.0
+                        powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "$docker = 'C:\\Users\\safag\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe'; $env:DOCKERHUB_TOKEN | & $docker login -u $env:DOCKERHUB_USER --password-stdin; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; & $docker push safagr/task-manager:1.0; exit $LASTEXITCODE"
                     '''
                 }
             }
