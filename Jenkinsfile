@@ -9,7 +9,6 @@ pipeline {
 
     stages {
 
-        // Etape 1 : Recuperer le code depuis GitHub
         stage('Checkout') {
             steps {
                 git branch: 'main',
@@ -17,7 +16,6 @@ pipeline {
             }
         }
 
-        // Etape 2 : Compiler le projet et executer les tests
         stage('Build et Tests') {
             steps {
                 dir('task-manager') {
@@ -26,7 +24,6 @@ pipeline {
             }
         }
 
-        // Etape 3 : Archiver le fichier JAR genere
         stage('Archive JAR') {
             steps {
                 dir('task-manager') {
@@ -36,11 +33,26 @@ pipeline {
             }
         }
 
-        // Etape 4 : Construire l'image Docker
         stage('Docker Build') {
             steps {
                 dir('task-manager') {
-                    bat '"C:\\Users\\safag\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" build -t task-manager:1.0 .'
+                    bat '"C:\\Users\\safag\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" build -t safagr/task-manager:1.0 .'
+                }
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKERHUB_USER',
+                    passwordVariable: 'DOCKERHUB_TOKEN'
+                )]) {
+                    bat '''
+                        @echo off
+                        echo %DOCKERHUB_TOKEN% | "C:\\Users\\safag\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" login -u "%DOCKERHUB_USER%" --password-stdin
+                        "C:\\Users\\safag\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" push safagr/task-manager:1.0
+                    '''
                 }
             }
         }
