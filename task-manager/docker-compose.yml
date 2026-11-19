@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16
+    container_name: taskmanager-db
+    environment:
+      POSTGRES_DB: taskmanager
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - taskmanager-data:/var/lib/postgresql/data
+    networks:
+      - taskmanager-network
+
+  api:
+    image: task-manager:1.0
+    container_name: taskmanager-api
+    depends_on:
+      - db
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/taskmanager
+      DB_USERNAME: postgres
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "8081:8081"
+    networks:
+      - taskmanager-network
+
+volumes:
+  taskmanager-data:
+    external: true
+
+networks:
+  taskmanager-network:
+    external: true

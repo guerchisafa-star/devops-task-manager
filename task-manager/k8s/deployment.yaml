@@ -1,0 +1,64 @@
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: task-manager
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: task-manager
+
+  template:
+    metadata:
+      labels:
+        app: task-manager
+
+    spec:
+      containers:
+        - name: task-manager
+          image: task-manager:1.0
+          imagePullPolicy: Never
+
+          ports:
+            - containerPort: 8081
+
+          # Variables d'environnement pour PostgreSQL
+          env:
+            - name: DB_URL
+              value: "jdbc:postgresql://taskmanager-db:5432/taskmanager"
+
+            - name: DB_USERNAME
+              value: "postgres"
+
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+
+          # Vérification de l'état de l'application
+          readinessProbe:
+            tcpSocket:
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 10
+
+          # Vérification pour redémarrer l'application si elle est bloquée
+          livenessProbe:
+            tcpSocket:
+              port: 8081
+            initialDelaySeconds: 60
+            periodSeconds: 20
+
+          # Limites et demandes de ressources
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
